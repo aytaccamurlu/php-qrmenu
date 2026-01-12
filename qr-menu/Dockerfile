@@ -8,13 +8,19 @@ RUN apt-get update && apt-get install -y \
     zip \
     unzip \
     git \
-    curl
+    curl \
+    libpq-dev
 
-# PHP eklentilerini kur
-RUN docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd
+# PHP eklentilerini kur (MySQL ve PostgreSQL için pdo_mysql pdo_pgsql eklendi)
+RUN docker-php-ext-install pdo_mysql pdo_pgsql mbstring exif pcntl bcmath gd
 
 # Apache mod_rewrite'ı aktif et (Laravel rotaları için şart)
 RUN a2enmod rewrite
+
+# Apache'nin Root dizinini Laravel'in PUBLIC klasörüne ayarla (Forbidden hatasını bu çözer)
+ENV APACHE_DOCUMENT_ROOT /var/www/html/public
+RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/000-default.conf
+RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf
 
 # Çalışma dizini
 WORKDIR /var/www/html
@@ -22,16 +28,12 @@ WORKDIR /var/www/html
 # Proje dosyalarını kopyala
 COPY . .
 
-# Composer kur
+# Composer kur ve bağımlılıkları yükle
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 RUN composer install --no-interaction --optimize-autoloader --no-dev
 
 # Klasör izinlerini ayarla
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
-
-# Portu ayarla
-ENV PORT=80
-RUN sed -i 's/80/${PORT}/g' /etc/apache2/sites-available/000-default.conf /etc/apache2/ports.conf
 
 # Başlangıç komutu
 CMD ["apache2-foreground"]
