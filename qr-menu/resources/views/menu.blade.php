@@ -71,13 +71,13 @@
             @endforelse
         </div>
 
-        <div class="p-8 bg-gray-50 border-t border-dashed flex flex-col items-center">
-            <div class="bg-white p-4 rounded-2xl shadow-lg">
-                <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data={{ urlencode(request()->fullUrl()) }}" 
-                     class="w-24 h-24" alt="QR">
-            </div>
-            <p class="text-[10px] text-gray-400 mt-3 font-bold uppercase tracking-widest">Afiyet Olsun</p>
+         <div class="p-10 bg-gray-50 border-t border-dashed flex flex-col items-center">
+        <div class="bg-white p-6 rounded-3xl shadow-2xl mb-4 border border-gray-100">
+            <img src="https://api.qrserver.com/v1/create-qr-code/?size=300x300&data={{ urlencode(request()->fullUrl()) }}" 
+                 class="w-48 h-48" alt="QR">
         </div>
+        <p class="text-xs text-gray-500 font-black uppercase tracking-[0.3em]">Menüyü Paylaş</p>
+    </div>
     </div>
 
     <script>
